@@ -81,6 +81,10 @@ ipython_config.py
 # pyenv
 .python-version
 
+# uv
+.python-version
+uv.lock
+
 # celery beat schedule file
 celerybeat-schedule
 
