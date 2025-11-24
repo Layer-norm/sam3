@@ -560,6 +560,7 @@ def build_sam3_image_model(
     eval_mode=True,
     checkpoint_path=None,
     load_from_HF=True,
+    hf_token=None,
     enable_segmentation=True,
     enable_inst_interactivity=False,
     compile=False,
@@ -572,16 +573,19 @@ def build_sam3_image_model(
         device: Device to load the model on ('cuda' or 'cpu')
         eval_mode: Whether to set the model to evaluation mode
         checkpoint_path: Optional path to model checkpoint
+        load_from_HF: Whether to download from HuggingFace if checkpoint not found
+        hf_token: HuggingFace authentication token for gated models
         enable_segmentation: Whether to enable segmentation head
         enable_inst_interactivity: Whether to enable instance interactivity (SAM 1 task)
-        compile_mode: To enable compilation, set to "default"
+        compile: Whether to enable torch compilation for speed
 
     Returns:
         A SAM3 image model
     """
     if bpe_path is None:
+        # Path to bundled BPE tokenizer vocabulary in sam3_lib/
         bpe_path = os.path.join(
-            os.path.dirname(__file__), "..", "assets", "bpe_simple_vocab_16e6.txt.gz"
+            os.path.dirname(__file__), "bpe_simple_vocab_16e6.txt.gz"
         )
     # Create visual components
     compile_mode = "default" if compile else None
@@ -626,7 +630,7 @@ def build_sam3_image_model(
         eval_mode,
     )
     if load_from_HF and checkpoint_path is None:
-        checkpoint_path = download_ckpt_from_hf()
+        checkpoint_path = download_ckpt_from_hf(hf_token=hf_token)
     # Load checkpoint if provided
     if checkpoint_path is not None:
         _load_checkpoint(model, checkpoint_path)
